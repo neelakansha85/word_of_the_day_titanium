@@ -1,5 +1,4 @@
 <Alloy>
-	
 	<Model src="demo1"></Model>
 	<Window class="container">
 		<Label id="word_lbl">Enter Word</Label>
