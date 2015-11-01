@@ -52,7 +52,9 @@ function checkWordofDay() {
 	Ti.API.info("Just before last_check: " + last_check);
 	
 	// Testing purpose disabling check
-	if (last_check != current_date) {
+//	if (last_check != current_date) {
+		
+	if (count<10) {	
 		var url = 'http://api.wordnik.com:80/v4/words.json/wordOfTheDay?date=' + current_date + '&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5';
 		//var word_of_day = 'freedom';
 		data.set('last_check', current_date);
@@ -94,8 +96,6 @@ function checkWordofDay() {
 				}
 				else if (isAndroid) {
 					var notification = Titanium.Android.createNotification({
-						contentTitle: 'Word of the Day',
-						contentText: 'Congratulations your word was the Word of the Day!',
 						number: count,
 						when: new Date()
 					});
@@ -104,7 +104,12 @@ function checkWordofDay() {
 				
 				alert("Congratulations your word was the Word of the Day for " + count + " times!");
 			}
-		});	
+		});
+		
+		//Remove callback event
+		Ti.App.addEventListener('remove', function(){
+			Ti.App.removeEventListener('get_word_of_day_request', callback);
+		});
 	}
 	Ti.API.info("END of checkWordofDay()");
 }
