@@ -13,9 +13,11 @@ if (isiOS && parseInt(Ti.Platform.version.split(".")[0]) >= 8) {
 }
 
 var data = Alloy.createModel('demo1', {user_word: '', last_check:'', count:'0'});
+/*
 data.set('user_word', 'contestant');
 var new_word = data.get('user_word');
 Ti.API.info("New Word set from Controller: " + new_word);
+*/
 
 function saveWord(e) {
     user_word = $.word_txt.value;
@@ -43,7 +45,7 @@ function checkWordofDay() {
 	
 	var today = new Date();
 	var d = today.getDate();
-	var m = today.getMonth();
+	var m = today.getMonth() + 1;
 	var yyyy = today.getFullYear();
 	var current_date = yyyy + "-" + m + "-" + d;
 	Ti.API.info("Current Date: " + current_date);
@@ -51,30 +53,58 @@ function checkWordofDay() {
 	
 	// Testing purpose disabling check
 	if (last_check != current_date) {
-		var api_url = 'http://api.wordnik.com:80/v4/words.json/wordOfTheDay?date=' + current_date + '&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5';
-		var word_of_day = 'freedom';
+		var url = 'http://api.wordnik.com:80/v4/words.json/wordOfTheDay?date=' + current_date + '&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5';
+		//var word_of_day = 'freedom';
 		data.set('last_check', current_date);
 		Ti.API.info("last_check: " + data.get('last_check'));
-		
-		if(user_word == word_of_day) {
-			count++;
-			if (isiOS) {
-				var notification = Ti.App.iOS.scheduleLocalNotification ({
-					badge: count
-				});
-			}
-			else if (isAndroid) {
-				var notification = Titanium.Android.createNotification({
-					contentTitle: 'Word of the Day',
-					contentText: 'Congratulations your word was the Word of the Day!',
-					number: count,
-					when: new Date()
-				});
-			}			
-			Ti.Media.vibrate([0, 500]);
 			
-			alert("Congratulations your word was the Word of the Day for " + count + " times!");
-		}
+		var json, word_of_day = '';
+		Ti.API.info("Before JSON API: word_of_day: " + word_of_day);
+
+		var xhr = Ti.Network.createHTTPClient({
+			onload: function(e) {
+				Ti.API.info('onload called, HTTP status = '+this.status);
+				
+				json = JSON.parse(this.responseText);
+				Ti.App.fireEvent('get_word_of_day_request', {'dataXHR':json.word});
+				//var word_of_day = json.word;
+				//Ti.API.info("JSON Response word of day: " + json.word);
+			},
+			onerror: function(e) {
+				Ti.App.fireEvent('get_word_of_day_request', {'error': 'Network Error!!!!!'}); 
+			    Ti.API.info("ERROR:  " + e.error);
+			    alert('There was an error retrieving the remote data. Try again.');
+		    },
+		    timeout:5000
+		});
+		xhr.open("GET", url, false);
+		xhr.send();
+		Ti.API.info("After JSON API: word_of_day: " + word_of_day);
+		
+		var callBack = Ti.App.addEventListener('get_word_of_day_request', function(data){
+	    	Ti.API.info(data.dataXHR);
+	    	word_of_day = data.dataXHR;
+	    	
+			if(user_word == word_of_day) {
+				count++;
+				if (isiOS) {
+					var notification = Ti.App.iOS.scheduleLocalNotification ({
+						badge: count
+					});
+				}
+				else if (isAndroid) {
+					var notification = Titanium.Android.createNotification({
+						contentTitle: 'Word of the Day',
+						contentText: 'Congratulations your word was the Word of the Day!',
+						number: count,
+						when: new Date()
+					});
+				}			
+				Ti.Media.vibrate([0, 500]);
+				
+				alert("Congratulations your word was the Word of the Day for " + count + " times!");
+			}
+		});	
 	}
 	Ti.API.info("END of checkWordofDay()");
 }
