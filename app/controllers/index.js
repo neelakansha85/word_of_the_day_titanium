@@ -12,11 +12,16 @@ if (isiOS && parseInt(Ti.Platform.version.split(".")[0]) >= 8) {
     });
 }
 
+var demo1 = Alloy.Collections.demo1;
 var data = Alloy.createModel('demo1', {user_word: '', last_check:'', count:'0'});
+demo1.add(data);
+data.save();
 
 function saveWord(e) {
     user_word = $.word_txt.value;
     data.set('user_word', user_word);
+    data.save();
+    //demo1.fetch();
     
     Ti.API.info("Inside saveWord()");
     Ti.API.info("user_word: " + user_word);
@@ -27,7 +32,7 @@ function saveWord(e) {
 
 function checkWordofDay() {
 	Ti.API.info("Inside checkWordofDay()");
-
+	
 	var user_word = data.get('user_word');
 	var last_check = data.get('last_check');
 	var count = data.get('count');
@@ -52,18 +57,23 @@ function checkWordofDay() {
 	if (count<10) {	
 		var url = 'http://api.wordnik.com:80/v4/words.json/wordOfTheDay?date=' + current_date + '&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5';
 		data.set('last_check', current_date);
+		data.save();
 		Ti.API.info("last_check: " + data.get('last_check'));
 			
 		var json, word_of_day = '';
 		Ti.API.info("Before JSON API: word_of_day: " + word_of_day);
-
+		
 		var xhr = Ti.Network.createHTTPClient({
 			onload: function(e) {
 				Ti.API.info('onload called, HTTP status = '+this.status);
 				
 				json = JSON.parse(this.responseText);
 				word_of_day = json.word;
+				Ti.API.info("API word_of_day: " + word_of_day);
+		
 				if(user_word == word_of_day) {
+					
+					count = data.get('count');
 					count++;
 					if (isiOS) {
 						var notification = Ti.App.iOS.scheduleLocalNotification ({
@@ -94,5 +104,7 @@ function checkWordofDay() {
 	}
 	Ti.API.info("END of checkWordofDay()");
 }
+
+demo1.fetch();
 
 $.index.open();
