@@ -9,5 +9,3 @@
 // object. For example:
 //
 // Alloy.Globals.someGlobalFunction = function(){};
-
-Alloy.Collections.demo1 = Alloy.createCollection('demo1');
