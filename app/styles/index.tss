@@ -1,0 +1,27 @@
+".container": {
+	backgroundColor:"white"
+}
+
+"Label": {
+	width: Ti.UI.SIZE,
+	height: Ti.UI.SIZE,
+	color: "#000"
+}
+
+"#word_lbl": {
+	font: {
+		fontSize: 12
+	},
+	top: 70,
+}
+
+"#word_txt": {
+	top: 100,
+	color: "#000",
+	borderColor: "#000",
+	width: 175
+}
+
+"Button": {
+	top: 140
+}
