@@ -11,4 +11,4 @@
 // Alloy.Globals.someGlobalFunction = function(){};
 
 var index = Alloy.createController('index');
-	index.checkWord(e);
+	index.begin();

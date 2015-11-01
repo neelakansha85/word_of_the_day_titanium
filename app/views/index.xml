@@ -3,6 +3,6 @@
 	<Window class="container">
 		<Label id="word_lbl">Enter Word</Label>
 		<TextField id="word_txt" value="{demo1.user_word}"></TextField>
-		<Button title="Save" onClick="checkWord(e)"></Button>
+		<Button title="Save" onClick="saveWord"></Button>
 	</Window>
 </Alloy>
