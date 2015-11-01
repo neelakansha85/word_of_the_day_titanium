@@ -9,6 +9,3 @@
 // object. For example:
 //
 // Alloy.Globals.someGlobalFunction = function(){};
-
-var index = Alloy.createController('index');
-	index.begin();
